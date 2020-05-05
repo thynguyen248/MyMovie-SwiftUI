@@ -29,6 +29,7 @@ struct HomeItemView: View {
                 .scaledToFit()
             } else {
                 Color.gray.frame(width: type.itemWidth, height: type.itemWidth * 3 / 2)
+                .cornerRadius(8.0)
             }
             
             Text(itemViewModel.title ?? "")

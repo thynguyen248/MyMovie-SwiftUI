@@ -59,7 +59,8 @@ struct MovieDetailView: View {
                                 .scaledToFit()
                                 .padding(.leading, self.leftMargin)
                         } else {
-                            Color.gray
+                            Color.black
+                                .opacity(0.8)
                                 .frame(width: self.posterImageWidth, height: self.posterImageHeight)
                                 .cornerRadius(5.0)
                                 .padding(.leading, self.leftMargin)
@@ -72,8 +73,7 @@ struct MovieDetailView: View {
                                 HStack {
                                     Text("Rating")
                                         .font(.title)
-                                        .fontWeight(.light)
-                                        .foregroundColor(Color.black.opacity(0.7))
+                                        .fontWeight(.thin)
                                     Text(self.viewModel.ratingText)
                                         .font(.title)
                                         .fontWeight(.semibold)
