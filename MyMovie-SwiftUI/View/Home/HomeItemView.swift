@@ -21,15 +21,15 @@ struct HomeItemView: View {
                     .placeholder {
                         Rectangle().foregroundColor(.gray)
                 }
-                .indicator(.activity) // Activity Indicator
-                .animation(.easeInOut(duration: 0.5)) // Animation Duration
-                .transition(.fade)
-                .frame(width: type.itemWidth, height: type.itemWidth * 3 / 2)
-                .cornerRadius(8.0)
-                .scaledToFit()
+                    .indicator(.activity) // Activity Indicator
+                    .animation(.easeInOut(duration: 0.5)) // Animation Duration
+                    .transition(.fade)
+                    .frame(width: type.itemWidth, height: type.itemWidth * 3 / 2)
+                    .cornerRadius(8.0)
+                    .scaledToFit()
             } else {
                 Color.gray.frame(width: type.itemWidth, height: type.itemWidth * 3 / 2)
-                .cornerRadius(8.0)
+                    .cornerRadius(8.0)
             }
             
             Text(itemViewModel.title ?? "")
