@@ -10,80 +10,88 @@ import SwiftUI
 import SDWebImageSwiftUI
 
 struct MovieDetailView: View {
+    @Environment(\.presentationMode) var presentationMode
     @ObservedObject var viewModel: MovieDetailViewModel
     
-    let posterImageHeight: CGFloat = 180.0
-    var posterImageWidth: CGFloat {
-        return posterImageHeight * 2 / 3
+    private var coverImageSize: CGSize {
+        return CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.width * 9 / 16)
+    }
+    
+    private var posterImageSize: CGSize {
+        return CGSize(width: 180.0 * 2 / 3, height: 180.0)
     }
     
     var body: some View {
-        GeometryReader { geometry in
-            ScrollView(.vertical, showsIndicators: false) {
-                ZStack(alignment: .top) {
-                    self.movieCover(size: CGSize(width: geometry.size.width, height: geometry.size.width * 2 / 3))
-                    self.middleview.padding(.top, (geometry.size.width * 2 / 3) - self.posterImageHeight / 2)
-                }.padding(.bottom, 20.0)
-                self.movieContent
-            }
+        ScrollView(.vertical, showsIndicators: false) {
+            ZStack(alignment: .top) {
+                movieCover
+                middleview.padding(.top, coverImageSize.height - posterImageSize.height / 3)
+            }.padding(.bottom, 20.0)
+            movieContent
         }
         .edgesIgnoringSafeArea(.all)
+        .navigationBarBackButtonHidden(true)
+        .navigationBarItems(leading: Button {
+            presentationMode.wrappedValue.dismiss()
+        } label: {
+            Image(systemName: "chevron.left")
+                .renderingMode(.template)
+                .foregroundColor(.white)
+                .imageScale(.large)
+        })
         .onAppear {
-            self.viewModel.loadData()
+            viewModel.loadData()
         }
     }
     
     private var middleview: some View {
-        HStack {
+        HStack(spacing: 16.0) {
             moviePoster
             VStack {
                 Spacer()
                 movieTitle
-            }
+            }.padding(.bottom, 16.0)
             Spacer()
         }
     }
     
-    private func movieCover(size: CGSize) -> some View {
-        if self.viewModel.coverImageUrl != nil {
+    private var movieCover: some View {
+        if viewModel.coverImageUrl != nil {
             return AnyView(
-                AnimatedImage(url: self.viewModel.coverImageUrl!)
+                WebImage(url: viewModel.coverImageUrl!)
                     .resizable()
                     .placeholder {
                         Rectangle().foregroundColor(.gray)
-                            .frame(width: size.width, height: size.height)
-                }
-                    .indicator(.activity) // Activity Indicator
-                    .animation(.easeInOut(duration: 0.5)) // Animation Duration
-                    .transition(.fade)
-                    .frame(width: size.width, height: size.height)
+                    }
+                    .indicator(.activity)
+                    .transition(.fade(duration: 0.5))
+                    .frame(width: coverImageSize.width, height: coverImageSize.height, alignment: .center)
                     .scaledToFit()
             )
         } else {
-            return AnyView(Color.gray.frame(width: size.width, height: size.height))
+            return AnyView(Color.gray.frame(width: coverImageSize.width, height: coverImageSize.height))
         }
     }
     
     private var moviePoster: some View {
-        if self.viewModel.posterImageUrl != nil {
+        if viewModel.posterImageUrl != nil {
             return AnyView(
-                AnimatedImage(url: self.viewModel.posterImageUrl!)
+                WebImage(url: viewModel.posterImageUrl!)
                     .resizable()
                     .placeholder {
                         Rectangle().foregroundColor(.gray)
-                }
-                    .indicator(.activity) // Activity Indicator
-                    .animation(.easeInOut(duration: 0.5)) // Animation Duration
-                    .transition(.fade)
-                    .frame(width: self.posterImageWidth, height: self.posterImageHeight)
-                    .cornerRadius(5.0)
+                    }
+                    .indicator(.activity)
+                    .transition(.fade(duration: 0.5))
+                    .frame(width: posterImageSize.width, height: posterImageSize.height, alignment: .center)
                     .scaledToFit()
+                    .cornerRadius(5.0)
                     .padding(.leading)
             )
         } else {
             return AnyView(Color.black
                 .opacity(0.8)
-                .frame(width: self.posterImageWidth, height: self.posterImageHeight)
+                .frame(width: posterImageSize.width, height: posterImageSize.height)
                 .cornerRadius(5.0)
                 .padding(.leading)
             )
@@ -97,13 +105,13 @@ struct MovieDetailView: View {
                 Text("Rating")
                     .font(.title)
                     .fontWeight(.thin)
-                Text(self.viewModel.ratingText)
+                Text(viewModel.ratingText)
                     .font(.title)
                     .fontWeight(.semibold)
-                    .foregroundColor(.blue)
+                    .foregroundColor(.primary)
             }
             //Release date
-            Text(self.viewModel.releaseDateText)
+            Text(viewModel.releaseDateText)
                 .font(.caption)
                 .fontWeight(.light)
                 .foregroundColor(.gray)
@@ -113,12 +121,12 @@ struct MovieDetailView: View {
     private var movieContent: some View {
         VStack(alignment: .leading, spacing: 10.0) {
             //Title
-            Text(self.viewModel.movieDetailModel?.title ?? "")
+            Text(viewModel.movieDetailModel?.title ?? "")
                 .font(.title)
                 .fontWeight(.thin)
                 .foregroundColor(Color.black.opacity(0.7))
             //Overview
-            Text(self.viewModel.movieDetailModel?.overview ?? "")
+            Text(viewModel.movieDetailModel?.overview ?? "")
                 .font(.subheadline)
                 .fontWeight(.light)
         }

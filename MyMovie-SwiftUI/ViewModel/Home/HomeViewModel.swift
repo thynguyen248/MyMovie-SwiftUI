@@ -9,7 +9,7 @@
 import Combine
 import Foundation
 
-class HomeViewModel: ObservableObject {
+final class HomeViewModel: ObservableObject {
     @Published var popularMoviesRowViewModel: HomeRowViewModel?
     @Published var topRatedMoviesRowViewModel: HomeRowViewModel?
     @Published var upcomingMoviesRowViewModel: HomeRowViewModel?
@@ -17,9 +17,9 @@ class HomeViewModel: ObservableObject {
     private var disposables = Set<AnyCancellable>()
     
     func loadData() {
-        getMovies(type: HomeSectionType.Popular)
-        getMovies(type: HomeSectionType.TopRated)
-        getMovies(type: HomeSectionType.Upcoming)
+        getMovies(type: .popular)
+        getMovies(type: .topRated)
+        getMovies(type: .upcoming)
     }
     
     func loadMore(type: HomeSectionType) {
@@ -28,11 +28,11 @@ class HomeViewModel: ObservableObject {
     
     func rowViewModel(from type: HomeSectionType) -> HomeRowViewModel? {
         switch type {
-        case HomeSectionType.Popular:
+        case .popular:
             return popularMoviesRowViewModel
-        case HomeSectionType.TopRated:
+        case .topRated:
             return topRatedMoviesRowViewModel
-        case HomeSectionType.Upcoming:
+        case .upcoming:
             return upcomingMoviesRowViewModel
         default:
             return nil
@@ -54,27 +54,27 @@ class HomeViewModel: ObservableObject {
                 case .finished:
                     break
                 }
-                }, receiveValue: { [weak self] response in
-                    guard let self = self else {
-                        return
-                    }
-                    
-                    let availableItemVMs = self.rowViewModel(from: type)?.dataList ?? []
-                    let movies = response.movies ?? []
-                    let itemVMs = availableItemVMs + movies.map { HomeItemViewModel(itemId: $0.movieId, title: $0.title, subTitle: nil, posterPath: $0.posterPath) }
-                    let rowVM = HomeRowViewModel(dataList: itemVMs, sectionType: type, pagingInfo: response.pagingInfo, isLoadingMore: false)
-                    
-                    switch type {
-                    case HomeSectionType.Popular:
-                        self.popularMoviesRowViewModel = rowVM
-                    case HomeSectionType.TopRated:
-                        self.topRatedMoviesRowViewModel = rowVM
-                    case HomeSectionType.Upcoming:
-                        self.upcomingMoviesRowViewModel = rowVM
-                    default:
-                        break
-                    }
-                    
+            }, receiveValue: { [weak self] response in
+                guard let self = self else {
+                    return
+                }
+                
+                let availableItemVMs = self.rowViewModel(from: type)?.dataList ?? []
+                let movies = response.movies ?? []
+                let itemVMs = availableItemVMs + movies.map { HomeItemViewModel(itemId: $0.movieId, title: $0.title, subTitle: nil, posterPath: $0.posterPath) }
+                let rowVM = HomeRowViewModel(dataList: itemVMs, sectionType: type, pagingInfo: response.pagingInfo, isLoadingMore: false)
+                
+                switch type {
+                case .popular:
+                    self.popularMoviesRowViewModel = rowVM
+                case .topRated:
+                    self.topRatedMoviesRowViewModel = rowVM
+                case .upcoming:
+                    self.upcomingMoviesRowViewModel = rowVM
+                default:
+                    break
+                }
+                
             })
             .store(in: &disposables)
     }

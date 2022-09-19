@@ -16,17 +16,16 @@ struct HomeItemView: View {
     var body: some View {
         VStack {
             if posterUrl != nil {
-                AnimatedImage(url: posterUrl!)
+                WebImage(url: posterUrl!)
                     .resizable()
                     .placeholder {
                         Rectangle().foregroundColor(.gray)
-                }
-                    .indicator(.activity) // Activity Indicator
-                    .animation(.easeInOut(duration: 0.5)) // Animation Duration
-                    .transition(.fade)
+                    }
+                    .indicator(.activity)
+                    .transition(.fade(duration: 0.5))
                     .frame(width: type.itemWidth, height: type.itemWidth * 3 / 2)
-                    .cornerRadius(8.0)
                     .scaledToFit()
+                    .cornerRadius(8.0)
             } else {
                 Color.gray.frame(width: type.itemWidth, height: type.itemWidth * 3 / 2)
                     .cornerRadius(8.0)

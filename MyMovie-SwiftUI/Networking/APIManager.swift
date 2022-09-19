@@ -81,11 +81,11 @@ extension APIManager {
         components.host = MovieAPI.host
         
         switch type {
-        case HomeSectionType.Popular:
+        case .popular:
             components.path = MovieAPI.path + "/movie/popular"
-        case HomeSectionType.TopRated:
+        case .topRated:
             components.path = MovieAPI.path + "/movie/top_rated"
-        case HomeSectionType.Upcoming:
+        case .upcoming:
             components.path = MovieAPI.path + "/movie/upcoming"
         default:
             break

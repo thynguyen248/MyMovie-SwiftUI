@@ -12,20 +12,23 @@ import Combine
 struct HomeView: View {
     @ObservedObject var viewModel: HomeViewModel
     var sections: [HomeSectionType] = [
-        .Popular, .TopRated, .Upcoming
+        .popular, .topRated, .upcoming
     ]
     
     var body: some View {
         NavigationView {
-            List(self.sections) { section in
-                self.viewModel.rowViewModel(from: section).map { rowViewModel in
-                    HomeRowView(rowViewModel: rowViewModel)
+          List {
+              ForEach(sections) { section in
+                viewModel.rowViewModel(from: section).map { rowViewModel in
+                  HomeRowView(rowViewModel: rowViewModel)
                 }
+              }
             }
-            .navigationBarTitle("MY MOVIE")
+          .listStyle(PlainListStyle())
+          .navigationBarTitle("MY MOVIE", displayMode: .large)
         }
         .onAppear {
-            self.viewModel.loadData()
+          viewModel.loadData()
         }
     }
 }

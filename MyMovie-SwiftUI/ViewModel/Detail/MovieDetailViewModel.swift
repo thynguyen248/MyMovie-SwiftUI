@@ -9,7 +9,7 @@
 import Combine
 import Foundation
 
-class MovieDetailViewModel : ObservableObject {
+final class MovieDetailViewModel : ObservableObject {
     @Published var movieDetailModel: MovieDetailModel?
     @Published var error: MovieError?
     

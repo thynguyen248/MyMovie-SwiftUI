@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-class HomeBuilder {
+final class HomeBuilder {
     static func makeMovieDetailView(
         withMovieId movieId: Int
     ) -> some View {
