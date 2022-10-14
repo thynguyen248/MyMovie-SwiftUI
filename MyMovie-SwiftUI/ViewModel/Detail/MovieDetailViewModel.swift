@@ -19,11 +19,12 @@ final class MovieDetailViewModel : ObservableObject {
     
     init(movieId: Int) {
         self.movieId = movieId
+        loadData()
     }
     
     func loadData() {
         APIManager.shared.getMovieDetail(movieId: movieId)
-        .receive(on: DispatchQueue.main)
+            .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { [weak self] value in
                 guard let self = self else {
                     return

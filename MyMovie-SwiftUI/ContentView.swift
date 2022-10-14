@@ -9,8 +9,11 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject var router = Router()
+    
     var body: some View {
         HomeView(viewModel: HomeViewModel())
+            .environmentObject(router)
     }
 }
 

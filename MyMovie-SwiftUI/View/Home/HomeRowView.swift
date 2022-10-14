@@ -24,7 +24,7 @@ struct HomeRowView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(alignment: .top, spacing: 10.0) {
                     ForEach(Array(dataSource.enumerated()), id: \.offset) { idx, itemModel in
-                        NavigationLink(destination: HomeBuilder.makeMovieDetailView(withMovieId: itemModel.itemId ?? 0)) {
+                        NavigationLink(value: itemModel.itemId) {
                             HomeItemView(itemViewModel: itemModel, type: rowViewModel.sectionType ?? .popular)
                         }
                     }

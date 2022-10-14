@@ -39,6 +39,7 @@
 		76AE65E124596876007A5313 /* MyMovie_SwiftUIUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76AE65E024596876007A5313 /* MyMovie_SwiftUIUITests.swift */; };
 		76AE65F324596DE5007A5313 /* HomeItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76AE65F224596DE5007A5313 /* HomeItemView.swift */; };
 		76B14D69245E85B900FA5B34 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 76B14D68245E85B900FA5B34 /* SDWebImageSwiftUI */; };
+		A07F071528F9388B0003FB47 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07F071428F9388B0003FB47 /* Router.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -96,6 +97,7 @@
 		76AE65E024596876007A5313 /* MyMovie_SwiftUIUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMovie_SwiftUIUITests.swift; sourceTree = "<group>"; };
 		76AE65E224596876007A5313 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		76AE65F224596DE5007A5313 /* HomeItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeItemView.swift; sourceTree = "<group>"; };
+		A07F071428F9388B0003FB47 /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -227,8 +229,9 @@
 			isa = PBXGroup;
 			children = (
 				76AE65EF24596D07007A5313 /* View */,
-				76A31D33246107AD002A9542 /* Builder */,
 				76AE65F124596D53007A5313 /* ViewModel */,
+				A07F071328F938770003FB47 /* Router */,
+				76A31D33246107AD002A9542 /* Builder */,
 				76AE65F024596D41007A5313 /* Model */,
 				76651B38245AC8940018B686 /* Networking */,
 				76A31D322461073C002A9542 /* Utilities */,
@@ -301,6 +304,14 @@
 				76A31D2B245FB16C002A9542 /* Detail */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		A07F071328F938770003FB47 /* Router */ = {
+			isa = PBXGroup;
+			children = (
+				A07F071428F9388B0003FB47 /* Router.swift */,
+			);
+			path = Router;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -444,6 +455,7 @@
 				769969B8245BD2FC006B5A5E /* HomeViewModel.swift in Sources */,
 				76651B3A245AC8A70018B686 /* APIManager.swift in Sources */,
 				769969BD245BF628006B5A5E /* HomeItemViewModel.swift in Sources */,
+				A07F071528F9388B0003FB47 /* Router.swift in Sources */,
 				76A31D312460FBBD002A9542 /* HomeRowView.swift in Sources */,
 				76A31D2F2460341B002A9542 /* String+date.swift in Sources */,
 				76651B32245AB31E0018B686 /* MovieModel.swift in Sources */,
@@ -634,6 +646,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"MyMovie-SwiftUI/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = "MyMovie-SwiftUI/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -641,7 +654,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "thy.nguyen.MyMovie-SwiftUI";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -653,6 +666,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"MyMovie-SwiftUI/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = "MyMovie-SwiftUI/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -660,7 +674,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "thy.nguyen.MyMovie-SwiftUI";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

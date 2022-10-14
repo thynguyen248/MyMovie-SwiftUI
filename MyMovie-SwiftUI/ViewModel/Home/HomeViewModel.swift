@@ -8,13 +8,19 @@
 
 import Combine
 import Foundation
+import SwiftUI
 
 final class HomeViewModel: ObservableObject {
     @Published var popularMoviesRowViewModel: HomeRowViewModel?
     @Published var topRatedMoviesRowViewModel: HomeRowViewModel?
     @Published var upcomingMoviesRowViewModel: HomeRowViewModel?
     @Published var error: MovieError?
+    
     private var disposables = Set<AnyCancellable>()
+    
+    init() {
+        loadData()
+    }
     
     func loadData() {
         getMovies(type: .popular)
@@ -43,6 +49,7 @@ final class HomeViewModel: ObservableObject {
         let targetPagingInfo = rowViewModel(from: type)?.pagingInfo
         let targetPage = (page ?? targetPagingInfo?.currentPage ?? 0) + 1
         APIManager.shared.getMovies(type: type, page: targetPage)
+            .last()
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { [weak self] value in
                 guard let self = self else {

@@ -10,7 +10,7 @@ import SwiftUI
 import SDWebImageSwiftUI
 
 struct MovieDetailView: View {
-    @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject var router: Router
     @ObservedObject var viewModel: MovieDetailViewModel
     
     private var coverImageSize: CGSize {
@@ -32,16 +32,13 @@ struct MovieDetailView: View {
         .edgesIgnoringSafeArea(.all)
         .navigationBarBackButtonHidden(true)
         .navigationBarItems(leading: Button {
-            presentationMode.wrappedValue.dismiss()
+            router.path.removeLast()
         } label: {
             Image(systemName: "chevron.left")
                 .renderingMode(.template)
                 .foregroundColor(.white)
                 .imageScale(.large)
         })
-        .onAppear {
-            viewModel.loadData()
-        }
     }
     
     private var middleview: some View {
