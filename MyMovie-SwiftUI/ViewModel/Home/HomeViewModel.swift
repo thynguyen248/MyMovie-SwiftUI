@@ -14,11 +14,11 @@ final class HomeViewModel: ObservableObject {
     @Published var error: NetworkRequestError?
     @Published var isLoading = false
     
-    private let movieUseCase: MovieUseCase
-    
     let trigger = PassthroughSubject<Void, Never>()
     let loadingMoreSection = CurrentValueSubject<HomeSectionType?, Never>(nil)
     private var disposables = Set<AnyCancellable>()
+    
+    private let movieUseCase: MovieUseCase
     
     init(movieUseCase: MovieUseCase = MovieUseCase()) {
         self.movieUseCase = movieUseCase

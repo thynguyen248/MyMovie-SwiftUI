@@ -14,11 +14,11 @@ final class MovieDetailViewModel : ObservableObject {
     @Published var isLoading = false
     @Published var error: NetworkRequestError?
     
-    private let movieId: Int
-    private let movieUseCase: MovieUseCase
-    
     let trigger = PassthroughSubject<Void, Never>()
     private var disposables = Set<AnyCancellable>()
+    
+    private let movieId: Int
+    private let movieUseCase: MovieUseCase
     
     init(movieId: Int, movieUseCase: MovieUseCase = MovieUseCase()) {
         self.movieId = movieId
