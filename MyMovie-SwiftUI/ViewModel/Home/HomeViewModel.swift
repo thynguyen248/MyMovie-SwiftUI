@@ -39,10 +39,10 @@ final class HomeViewModel: ObservableObject {
                     self?.getMovieList(sectionType: .upcoming) ?? Empty().eraseToAnyPublisher()
                 )
             }
-            .sink(receiveValue: { [weak self] (popular, toprated, upcoming) in
-                self?.dataSource = [popular, toprated, upcoming]
+            .map({ (popular, toprated, upcoming) in
+                return [popular, toprated, upcoming]
             })
-            .store(in: &disposables)
+            .assign(to: &$dataSource)
         
         loadingMoreSection
             .drop(while: { $0 == nil })
