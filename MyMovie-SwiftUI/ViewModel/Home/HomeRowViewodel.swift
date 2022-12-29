@@ -8,9 +8,13 @@
 
 import Combine
 
-struct HomeRowViewModel {
-    var dataList: [HomeItemViewModel]?
+struct HomeRowViewModel: Identifiable {
+    var dataList: [HomeItemViewModel] = []
     var sectionType: HomeSectionType?
     var pagingInfo: PagingInfoModel?
-    var isLoadingMore: Bool?
+    var isLoadingMore: Bool = false
+    
+    var id: String {
+        return "\(dataList.count), \(sectionType?.rawValue ?? 0), \(pagingInfo?.currentPage ?? 0), \(isLoadingMore)"
+    }
 }

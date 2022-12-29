@@ -10,72 +10,80 @@ import Combine
 import Foundation
 
 final class HomeViewModel: ObservableObject {
-    @Published var popularMoviesRowViewModel: HomeRowViewModel?
-    @Published var topRatedMoviesRowViewModel: HomeRowViewModel?
-    @Published var upcomingMoviesRowViewModel: HomeRowViewModel?
-    @Published var error: MovieError?
+    @Published var dataSource: [HomeRowViewModel] = []
+    @Published var error: NetworkRequestError?
+    @Published var isLoading = false
+    
+    private let movieUseCase: MovieUseCase
+    
+    let trigger = PassthroughSubject<Void, Never>()
+    let loadingMoreSection = CurrentValueSubject<HomeSectionType?, Never>(nil)
     private var disposables = Set<AnyCancellable>()
     
-    func loadData() {
-        getMovies(type: .popular)
-        getMovies(type: .topRated)
-        getMovies(type: .upcoming)
+    init(movieUseCase: MovieUseCase = MovieUseCase()) {
+        self.movieUseCase = movieUseCase
+        binding()
     }
     
-    func loadMore(type: HomeSectionType) {
-        getMovies(type: type)
-    }
-    
-    func rowViewModel(from type: HomeSectionType) -> HomeRowViewModel? {
-        switch type {
-        case .popular:
-            return popularMoviesRowViewModel
-        case .topRated:
-            return topRatedMoviesRowViewModel
-        case .upcoming:
-            return upcomingMoviesRowViewModel
-        default:
-            return nil
-        }
-    }
-    
-    private func getMovies(type: HomeSectionType, page: Int? = nil) {
-        let targetPagingInfo = rowViewModel(from: type)?.pagingInfo
-        let targetPage = (page ?? targetPagingInfo?.currentPage ?? 0) + 1
-        APIManager.shared.getMovies(type: type, page: targetPage)
-            .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { [weak self] value in
-                guard let self = self else {
-                    return
-                }
-                switch value {
-                case .failure(let error):
-                    self.error = error
-                case .finished:
-                    break
-                }
-            }, receiveValue: { [weak self] response in
-                guard let self = self else {
-                    return
-                }
-                
-                let availableItemVMs = self.rowViewModel(from: type)?.dataList ?? []
-                let movies = response.movies ?? []
-                let itemVMs = availableItemVMs + movies.map { HomeItemViewModel(itemId: $0.movieId, title: $0.title, subTitle: nil, posterPath: $0.posterPath) }
-                let rowVM = HomeRowViewModel(dataList: itemVMs, sectionType: type, pagingInfo: response.pagingInfo, isLoadingMore: false)
-                
-                switch type {
-                case .popular:
-                    self.popularMoviesRowViewModel = rowVM
-                case .topRated:
-                    self.topRatedMoviesRowViewModel = rowVM
-                case .upcoming:
-                    self.upcomingMoviesRowViewModel = rowVM
-                default:
-                    break
-                }
-                
+    func binding() {
+        trigger
+            .handleEvents(receiveSubscription: { [weak self] _ in
+                self?.isLoading = true
+            }, receiveOutput: { [weak self] _ in
+                self?.isLoading = false
+            })
+            .flatMap { [weak self] _ in
+                return Publishers.Zip3(
+                    self?.getMovieList(sectionType: .popular) ?? Empty().eraseToAnyPublisher(),
+                    self?.getMovieList(sectionType: .topRated) ?? Empty().eraseToAnyPublisher(),
+                    self?.getMovieList(sectionType: .upcoming) ?? Empty().eraseToAnyPublisher()
+                )
+            }
+            .sink(receiveValue: { [weak self] (popular, toprated, upcoming) in
+                self?.dataSource = [popular, toprated, upcoming]
             })
             .store(in: &disposables)
+        
+        loadingMoreSection
+            .drop(while: { $0 == nil })
+            .handleEvents(receiveSubscription: { [weak self] _ in
+                guard let sectionType = self?.loadingMoreSection.value,
+                      let targetIdx = self?.dataSource.firstIndex(where: { $0.sectionType == sectionType })
+                else { return }
+                self?.dataSource[targetIdx].isLoadingMore = true
+            })
+            .flatMap { [weak self] sectionType -> AnyPublisher<HomeRowViewModel, Never> in
+                guard let sectionType = sectionType,
+                      let currentPage = self?.dataSource.first(where: { $0.sectionType == sectionType })?.pagingInfo?.currentPage
+                else { return Empty().eraseToAnyPublisher() }
+                return self?.getMovieList(sectionType: sectionType, page: currentPage + 1) ?? Empty().eraseToAnyPublisher()
+            }
+            .sink(receiveValue: { [weak self] row in
+                guard let sectionType = self?.loadingMoreSection.value,
+                      let targetIdx = self?.dataSource.firstIndex(where: { $0.sectionType == sectionType })
+                else { return }
+                self?.dataSource[targetIdx] = row
+            })
+            .store(in: &disposables)
+    }
+    
+    private func getMovieList(sectionType: HomeSectionType, page: Int = 1) -> AnyPublisher<HomeRowViewModel, Never> {
+        return movieUseCase.getMovieList(type: sectionType.movieListType, page: page)
+            .asResult()
+            .receive(on: DispatchQueue.main)
+            .map({ [weak self] result -> HomeRowViewModel in
+                switch result {
+                case .success(let responseModel):
+                    let availableItemVMs = self?.dataSource.first(where: { $0.sectionType == sectionType })?.dataList ?? []
+                    let movies = responseModel.movies ?? []
+                    let itemVMs = availableItemVMs + movies.map { HomeItemViewModel(itemId: $0.movieId, title: $0.title, subTitle: nil, posterPath: $0.posterPath) }
+                    let rowVM = HomeRowViewModel(dataList: itemVMs, sectionType: sectionType, pagingInfo: responseModel.pagingInfo)
+                    return rowVM
+                case .failure(let error):
+                    self?.error = error
+                    return HomeRowViewModel(dataList: [], sectionType: nil, pagingInfo: nil, isLoadingMore: false)
+                }
+            })
+            .eraseToAnyPublisher()
     }
 }

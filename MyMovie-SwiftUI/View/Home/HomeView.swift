@@ -11,24 +11,21 @@ import Combine
 
 struct HomeView: View {
     @ObservedObject var viewModel: HomeViewModel
-    var sections: [HomeSectionType] = [
-        .popular, .topRated, .upcoming
-    ]
     
     var body: some View {
-        NavigationView {
-          List {
-              ForEach(sections) { section in
-                viewModel.rowViewModel(from: section).map { rowViewModel in
-                  HomeRowView(rowViewModel: rowViewModel)
+        LoadingView(isShowing: $viewModel.isLoading) {
+            NavigationView {
+                List {
+                    ForEach(viewModel.dataSource) { rowViewModel in
+                        HomeRowView(rowViewModel: rowViewModel)
+                    }
                 }
-              }
+                .listStyle(PlainListStyle())
+                .navigationBarTitle("MY MOVIE", displayMode: .large)
             }
-          .listStyle(PlainListStyle())
-          .navigationBarTitle("MY MOVIE", displayMode: .large)
-        }
-        .onAppear {
-          viewModel.loadData()
+            .onAppear {
+                viewModel.trigger.send(())
+            }
         }
     }
 }

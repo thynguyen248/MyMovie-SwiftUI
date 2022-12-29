@@ -11,36 +11,43 @@ import Foundation
 
 final class MovieDetailViewModel : ObservableObject {
     @Published var movieDetailModel: MovieDetailModel?
-    @Published var error: MovieError?
+    @Published var isLoading = false
+    @Published var error: NetworkRequestError?
     
-    let movieId: Int
+    private let movieId: Int
+    private let movieUseCase: MovieUseCase
     
+    let trigger = PassthroughSubject<Void, Never>()
     private var disposables = Set<AnyCancellable>()
     
-    init(movieId: Int) {
+    init(movieId: Int, movieUseCase: MovieUseCase = MovieUseCase()) {
         self.movieId = movieId
+        self.movieUseCase = movieUseCase
+        binding()
     }
     
-    func loadData() {
-        APIManager.shared.getMovieDetail(movieId: movieId)
-        .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { [weak self] value in
-                guard let self = self else {
-                    return
-                }
-                switch value {
-                case .failure(let error):
-                    self.error = error
-                case .finished:
-                    break
-                }
-            }, receiveValue: { [weak self] detailModel in
-                guard let self = self else {
-                    return
-                }
-                self.movieDetailModel = detailModel
+    func binding() {
+        trigger
+            .handleEvents(receiveSubscription: { [weak self] _ in
+                self?.isLoading = true
+            }, receiveOutput: { [weak self] _ in
+                self?.isLoading = false
             })
-        .store(in: &disposables)
+            .flatMap { [movieUseCase, movieId] _ in
+                return movieUseCase.getMovieDetail(movieId: movieId)
+                    .asResult()
+                    .receive(on: DispatchQueue.main)
+                    .map({ [weak self] result -> MovieDetailModel? in
+                        switch result {
+                        case .success(let movieDetail):
+                            return movieDetail
+                        case .failure(let error):
+                            self?.error = error
+                            return nil
+                        }
+                    })
+            }
+            .assign(to: &$movieDetailModel)
     }
     
     var posterImageUrl: URL? {

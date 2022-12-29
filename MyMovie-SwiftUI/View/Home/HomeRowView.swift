@@ -10,7 +10,7 @@ import SwiftUI
 import SDWebImageSwiftUI
 
 struct HomeRowView: View {
-    var rowViewModel: HomeRowViewModel
+    let rowViewModel: HomeRowViewModel
     var onLoadMore: (() -> Void)?
     
     @State private var scrollViewSize: CGSize = .zero
@@ -24,7 +24,8 @@ struct HomeRowView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(alignment: .top, spacing: 10.0) {
                     ForEach(Array(dataSource.enumerated()), id: \.offset) { idx, itemModel in
-                        NavigationLink(destination: HomeBuilder.makeMovieDetailView(withMovieId: itemModel.itemId ?? 0)) {
+                        NavigationLink(destination: NavigationLazyView(
+                            HomeBuilder.makeMovieDetailView(withMovieId: itemModel.itemId ?? 0))) {
                             HomeItemView(itemViewModel: itemModel, type: rowViewModel.sectionType ?? .popular)
                         }
                     }
@@ -43,6 +44,6 @@ struct HomeRowView: View {
     }
     
     private var dataSource: [HomeItemViewModel] {
-        rowViewModel.dataList?.compactMap { $0 } ?? []
+        rowViewModel.dataList.compactMap { $0 }
     }
 }

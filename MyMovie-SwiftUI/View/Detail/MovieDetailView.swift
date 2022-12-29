@@ -22,25 +22,27 @@ struct MovieDetailView: View {
     }
     
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            ZStack(alignment: .top) {
-                movieCover
-                middleview.padding(.top, coverImageSize.height - posterImageSize.height / 3)
-            }.padding(.bottom, 20.0)
-            movieContent
-        }
-        .edgesIgnoringSafeArea(.all)
-        .navigationBarBackButtonHidden(true)
-        .navigationBarItems(leading: Button {
-            presentationMode.wrappedValue.dismiss()
-        } label: {
-            Image(systemName: "chevron.left")
-                .renderingMode(.template)
-                .foregroundColor(.white)
-                .imageScale(.large)
-        })
-        .onAppear {
-            viewModel.loadData()
+        LoadingView(isShowing: $viewModel.isLoading) {
+            ScrollView(.vertical, showsIndicators: false) {
+                ZStack(alignment: .top) {
+                    movieCover
+                    middleview.padding(.top, coverImageSize.height - posterImageSize.height / 3)
+                }.padding(.bottom, 20.0)
+                movieContent
+            }
+            .edgesIgnoringSafeArea(.all)
+            .navigationBarBackButtonHidden(true)
+            .navigationBarItems(leading: Button {
+                presentationMode.wrappedValue.dismiss()
+            } label: {
+                Image(systemName: "chevron.left")
+                    .renderingMode(.template)
+                    .foregroundColor(.white)
+                    .imageScale(.large)
+            })
+            .onAppear {
+                viewModel.trigger.send(())
+            }
         }
     }
     
@@ -90,10 +92,10 @@ struct MovieDetailView: View {
             )
         } else {
             return AnyView(Color.black
-                .opacity(0.8)
-                .frame(width: posterImageSize.width, height: posterImageSize.height)
-                .cornerRadius(5.0)
-                .padding(.leading)
+                            .opacity(0.8)
+                            .frame(width: posterImageSize.width, height: posterImageSize.height)
+                            .cornerRadius(5.0)
+                            .padding(.leading)
             )
         }
     }

@@ -20,6 +20,17 @@ enum HomeSectionType: Int, SectionType, Identifiable {
     case topRated
     case upcoming
     
+    var movieListType: MovieListType {
+        switch self {
+        case .topRated:
+            return .topRated
+        case .upcoming:
+            return .upcoming
+        default:
+            return .popular
+        }
+    }
+    
     var description: String {
         switch self {
         case .recommendation:

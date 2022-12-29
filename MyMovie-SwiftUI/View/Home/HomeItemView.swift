@@ -33,6 +33,7 @@ struct HomeItemView: View {
             
             Text(itemViewModel.title ?? "")
                 .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
                 .foregroundColor(.primary)
                 .font(.system(size: 16.0, weight: .light))
             Spacer()
