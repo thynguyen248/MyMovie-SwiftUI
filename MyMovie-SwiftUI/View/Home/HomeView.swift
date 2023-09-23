@@ -11,7 +11,7 @@ import Combine
 
 struct HomeView: View {
     @EnvironmentObject var router: Router
-    @ObservedObject var viewModel: HomeViewModel
+    @StateObject var viewModel: HomeViewModel
     var sections: [HomeSectionType] = [
         .popular, .topRated, .upcoming
     ]
@@ -32,8 +32,8 @@ struct HomeView: View {
                 HomeBuilder.makeMovieDetailView(withMovieId: itemId)
             }
         }
-        .onAppear {
-            viewModel.loadData()
+        .task {
+          viewModel.loadData()
         }
     }
 }
