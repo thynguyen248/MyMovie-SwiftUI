@@ -11,7 +11,7 @@ import SDWebImageSwiftUI
 
 struct MovieDetailView: View {
     @Environment(\.presentationMode) var presentationMode
-    @ObservedObject var viewModel: MovieDetailViewModel
+    @StateObject var viewModel: MovieDetailViewModel
     
     private var coverImageSize: CGSize {
         return CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.width * 9 / 16)

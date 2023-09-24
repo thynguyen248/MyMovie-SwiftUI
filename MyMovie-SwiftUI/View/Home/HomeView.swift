@@ -10,7 +10,7 @@ import SwiftUI
 import Combine
 
 struct HomeView: View {
-    @ObservedObject var viewModel: HomeViewModel
+    @StateObject var viewModel: HomeViewModel
     
     var body: some View {
         LoadingView(isShowing: $viewModel.isLoading) {
